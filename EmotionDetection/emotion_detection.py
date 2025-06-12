@@ -16,7 +16,7 @@ def emotion_detector(text_to_analyze):
     myobj = { "raw_document": { "text": text_to_analyze } }
     # Set the headers with the required model ID for the API
     header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
-    is_sample_response = False
+
     flexible_response = Response()
 
     # Make a POST request to the API with the payload and headers
@@ -31,7 +31,8 @@ def emotion_detector(text_to_analyze):
         formatted_response = json.loads(response.text)
 
     except requests.exceptions.Timeout:
-        # Handle Timeout Exception which may happen in local development due to permissions to IBM APIs 
+        # Handle Timeout Exception which may happen in local development
+        # due to permissions to IBM APIs
         print("\nRequest timed out...loading sample response...\n")
 
         # Fake a 200 Response since we are using sample
@@ -45,14 +46,11 @@ def emotion_detector(text_to_analyze):
         with open(file_path, 'r', encoding="utf-8") as file:
             formatted_response = json.loads(file.read())
 
-        # Set that we are using a sample request
-        is_sample_response = True
-
     except requests.exceptions.RequestException as e:
         # Handle General Request Exeptions and print exception details
         return f"An error occurred: {e}"
 
-    formatted_output = dict()
+    formatted_output = {}
 
     if flexible_response.status_code == 400:
         formatted_output = {
@@ -64,7 +62,7 @@ def emotion_detector(text_to_analyze):
                 'dominant_emotion': 'None'
             }
         return formatted_output
-        
+
     if len(formatted_response) > 0:
         # Load Emotion Scores
         emotion_scores = formatted_response['emotionPredictions'][0]['emotion']
@@ -80,7 +78,7 @@ def emotion_detector(text_to_analyze):
             'sadness': emotion_scores.get('sadness', 0.0),
             'dominant_emotion': dominant_emotion
         }
-    
+
     return formatted_output
 
 def get_dominant_emotion_key(data):
