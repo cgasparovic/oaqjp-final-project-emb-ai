@@ -20,6 +20,8 @@ def emotion_detector_route():
     This function processes the text for emotion detection
     and returns the result in the specified format.
     '''
+
+
     # Get the text to be analyzed
     text_to_analyze = request.args.get('textToAnalyze')
 
@@ -28,7 +30,7 @@ def emotion_detector_route():
 
     # Check for invalid input
     if response['dominant_emotion'] is None:
-        return jsonify({"error": "Invalid text input. Please try again."}), 400
+        return jsonify({"error": "Invalid text. Please try again."}), 400
 
     # Format the output as requested
     output_string = f"For the given statement, the system response is 'anger':\
@@ -37,6 +39,12 @@ def emotion_detector_route():
     The dominant emotion is <b>{response['dominant_emotion']}</b>."
 
     return output_string
+
+@app.errorhandler(400)
+def bad_request_error(error):
+    response = jsonify({'message': 'Invalid text! Please try again!'})
+    response.status_code = 400
+    return response
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
